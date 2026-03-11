@@ -12,7 +12,7 @@ alembic
 aiosqlite
 
 # Security
-passlib[bcrypt]
+bcrypt
 python-jose[cryptography]
 
 # Testing

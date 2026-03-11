@@ -4,7 +4,8 @@ class UsuarioBase(BaseModel):
     email: EmailStr = Field(..., description="Correo electrónico del usuario")
 
 class UsuarioCreate(UsuarioBase):
-    password: str = Field(..., min_length=8, description="Contraseña segura (mín. 8 caracteres)")
+    # Límite estricto de 72 caracteres de bcrypt
+    password: str = Field(..., min_length=8, max_length=72, description="Contraseña segura (mín. 8 caracteres, máx. 72)")
 
 class UsuarioResponse(UsuarioBase):
     id: int
