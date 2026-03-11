@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
-from typing import Optional, Any
+from typing import Any, Optional
+
+from pydantic import BaseModel, Field, field_validator
+
 
 class OnboardingBasico(BaseModel):
     moneda_principal: str = Field(..., min_length=3, max_length=3)
@@ -19,5 +21,5 @@ class OnboardingBasico(BaseModel):
         try:
             val = Decimal(str(v))
             return val.quantize(Decimal('0.00'))
-        except Exception:
-            raise ValueError("El monto debe ser un número decimal válido.")
+        except Exception as e:
+            raise ValueError("El monto debe ser un número decimal válido.") from e

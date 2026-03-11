@@ -1,11 +1,13 @@
 from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
-from app.schemas.onboarding import OnboardingBasico
-from app.schemas.moneda_utils import decimal_a_unidad_menor, unidad_menor_a_decimal
-from app.repositories.onboarding_repo import onboarding_repo
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.logger import logger
+from app.repositories.onboarding_repo import onboarding_repo
+from app.schemas.moneda_utils import decimal_a_unidad_menor, unidad_menor_a_decimal
+from app.schemas.onboarding import OnboardingBasico
+
 
 class OnboardingService:
     @staticmethod
@@ -33,10 +35,10 @@ class OnboardingService:
             await db.commit()
             logger.info(f"Onboarding completado. Moneda base: {moneda}")
             return payload_onboarding
-        except Exception:
+        except Exception as e:
             await db.rollback()
             logger.error("Error crítico guardando Onboarding", exc_info=True)
-            raise HTTPException(status_code=500, detail="Fallo al guardar el perfil financiero.")
+            raise HTTPException(status_code=500, detail="Fallo al guardar el perfil financiero.") from e
 
     @staticmethod
     async def obtener_perfil_activo(db: AsyncSession) -> Optional[OnboardingBasico]:

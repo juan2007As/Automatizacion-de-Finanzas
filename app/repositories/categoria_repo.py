@@ -1,8 +1,11 @@
 from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.repositories.base import BaseRepository
+
 from app.models.categoria import Categoria
+from app.repositories.base import BaseRepository
+
 
 class CategoriaRepository(BaseRepository[Categoria]):
     async def get_by_name(self, db: AsyncSession, nombre: str) -> Optional[Categoria]:

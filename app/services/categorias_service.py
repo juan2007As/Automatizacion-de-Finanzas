@@ -1,11 +1,13 @@
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
-from app.models.categoria import Categoria
-from app.schemas.categoria import CategoriaCreate
-from app.repositories.categoria_repo import categoria_repo
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.logger import logger
+from app.models.categoria import Categoria
+from app.repositories.categoria_repo import categoria_repo
+from app.schemas.categoria import CategoriaCreate
+
 
 class CategoriaService:
     @staticmethod
@@ -26,7 +28,7 @@ class CategoriaService:
         except Exception as e:
             await db.rollback()
             logger.error(f"Fallo al crear categoría: {str(e)}", exc_info=True)
-            raise HTTPException(status_code=500, detail="Fallo interno al guardar la categoría.")
+            raise HTTPException(status_code=500, detail="Fallo interno al guardar la categoría.") from e
 
     @staticmethod
     async def get_all(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Categoria]:

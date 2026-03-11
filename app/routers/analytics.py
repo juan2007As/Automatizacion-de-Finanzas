@@ -14,5 +14,5 @@ router = APIRouter()
 )
 async def obtener_dashboard(
     db: AsyncSession = Depends(get_db_session)
-):
+) -> DashboardResponse:
     return await AnalyticsService.get_dashboard_mensual(db)

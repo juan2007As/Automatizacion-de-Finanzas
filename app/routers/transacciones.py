@@ -1,6 +1,7 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
 from app.db.session import get_db_session
 from app.schemas.transaccion import TransaccionCreate, TransaccionResponse
@@ -22,7 +23,7 @@ router = APIRouter()
 async def crear_transaccion(
     payload_transaccion: TransaccionCreate,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> TransaccionResponse:
     return await TransaccionService.registrar_transaccion(db, payload_transaccion)
 
 @router.get(
@@ -34,5 +35,5 @@ async def crear_transaccion(
 async def obtener_historial(
     skip: int = 0, limit: int = 100,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> List[TransaccionResponse]:
     return await TransaccionService.listar_historial(db, skip, limit)

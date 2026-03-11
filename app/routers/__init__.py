@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.routers import categorias, transacciones, onboarding, analytics
+
+from app.routers import analytics, categorias, onboarding, transacciones
 
 api_router = APIRouter()
 

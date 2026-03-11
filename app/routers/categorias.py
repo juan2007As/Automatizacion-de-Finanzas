@@ -1,6 +1,7 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
 from app.db.session import get_db_session
 from app.schemas.categoria import CategoriaCreate, CategoriaResponse
@@ -21,7 +22,7 @@ router = APIRouter()
 async def crear_categoria(
     payload_categoria: CategoriaCreate,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> CategoriaResponse:
     # Pilar 2: El Router solo delega, no calcula.
     return await CategoriaService.create_categoria(db, payload_categoria)
 
@@ -33,7 +34,7 @@ async def crear_categoria(
 async def listar_categorias(
     skip: int = 0, limit: int = 100,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> List[CategoriaResponse]:
     return await CategoriaService.get_all(db, skip, limit)
 
 @router.delete(
@@ -45,5 +46,5 @@ async def listar_categorias(
 async def eliminar_categoria(
     categoria_id: int,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> None:
     await CategoriaService.soft_delete(db, categoria_id)

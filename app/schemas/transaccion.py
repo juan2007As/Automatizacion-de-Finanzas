@@ -1,8 +1,11 @@
 from datetime import date
 from decimal import Decimal
-from typing import Optional, Any
+from typing import Optional
+
 from pydantic import BaseModel, Field, field_validator, model_validator
+
 from app.schemas.moneda_utils import DIVISAS_SOPORTADAS
+
 
 class TransaccionBase(BaseModel):
     monto: Decimal = Field(..., gt=0, description="Monto en la divisa original")
@@ -23,7 +26,12 @@ class TransaccionBase(BaseModel):
     @model_validator(mode='after')
     def validar_decimales_moneda(self) -> 'TransaccionBase':
         decimales_permitidos = DIVISAS_SOPORTADAS.get(self.moneda, 2)
-        if self.monto.as_tuple().exponent < -decimales_permitidos:
+        # Handle the case where exponent is a string or special value (e.g. 'n' for NaN, 'F' for Infinity)
+        exponent = self.monto.as_tuple().exponent
+        if not isinstance(exponent, int):
+            raise ValueError("Monto inválido (NaN o Infinito).")
+
+        if exponent < -decimales_permitidos:
             raise ValueError(
                 f"El monto {self.monto} tiene demasiados decimales para la moneda {self.moneda}. "
                 f"Máximo permitido: {decimales_permitidos}."
@@ -33,7 +41,11 @@ class TransaccionBase(BaseModel):
 class TransaccionCreate(TransaccionBase):
     pass
 
+from pydantic import ConfigDict
+
 class TransaccionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     monto: Decimal
     moneda: str
@@ -41,6 +53,3 @@ class TransaccionResponse(BaseModel):
     descripcion: str
     notas: Optional[str] = None
     categoria_id: int
-
-    class Config:
-        from_attributes = True

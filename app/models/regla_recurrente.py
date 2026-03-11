@@ -1,8 +1,11 @@
 import enum
 from datetime import date
+
+from sqlalchemy import Boolean, Date, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Enum, Integer, Date, Boolean, ForeignKey
+
 from app.models.base import Base
+
 
 class Frecuencia(str, enum.Enum):
     DIARIO = "DIARIO"

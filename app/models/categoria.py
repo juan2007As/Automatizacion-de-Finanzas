@@ -1,7 +1,10 @@
 import enum
+
+from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Enum
+
 from app.models.base import Base
+
 
 class TipoCategoria(str, enum.Enum):
     INGRESO = "INGRESO"

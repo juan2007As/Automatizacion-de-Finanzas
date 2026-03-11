@@ -1,8 +1,11 @@
 from typing import List
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.repositories.base import BaseRepository
+
 from app.models.transaccion import Transaccion
+from app.repositories.base import BaseRepository
+
 
 class TransaccionRepository(BaseRepository[Transaccion]):
     async def get_by_categoria(

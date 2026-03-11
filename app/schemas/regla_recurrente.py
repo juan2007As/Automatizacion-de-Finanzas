@@ -1,8 +1,11 @@
-from decimal import Decimal
 from datetime import date
-from typing import Optional, Any
+from decimal import Decimal
+from typing import Any, Optional
+
 from pydantic import BaseModel, Field, field_validator
+
 from app.models.regla_recurrente import Frecuencia
+
 
 class ReglaRecurrenteBase(BaseModel):
     descripcion: str = Field(..., min_length=2, max_length=255)
@@ -18,8 +21,8 @@ class ReglaRecurrenteBase(BaseModel):
         try:
             val = Decimal(str(v))
             return val.quantize(Decimal('0.00'))
-        except Exception:
-            raise ValueError("El monto recurrente debe ser numérico.")
+        except Exception as e:
+            raise ValueError("El monto recurrente debe ser numérico.") from e
 
 class ReglaRecurrenteCreate(ReglaRecurrenteBase):
     pass

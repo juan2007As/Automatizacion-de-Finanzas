@@ -1,10 +1,12 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
 from app.core.config import settings
 from app.core.logger import logger
 from app.routers import api_router
+
 
 def create_application() -> FastAPI:
     application = FastAPI(
@@ -14,9 +16,11 @@ def create_application() -> FastAPI:
         description="Core Financiero (Local Desktop Edition)",
     )
 
+    from fastapi import Request
+
     # Pilar 6 y 3: Manejo Global de Errores (JSON estructurado, sin stack traces)
     @application.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request, exc):
+    async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
         logger.warning(f"Rechazo de Capa Anti-Corrupción (422): {exc.errors()}")
         return JSONResponse(
             status_code=422,
@@ -28,7 +32,7 @@ def create_application() -> FastAPI:
         )
 
     @application.exception_handler(Exception)
-    async def global_exception_handler(request, exc):
+    async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
         # Pilar 7: Logs estructurados con stack trace, pero respuesta limpia al frontend
         logger.error("Fallo interno no controlado", exc_info=True)
         return JSONResponse(
@@ -40,7 +44,7 @@ def create_application() -> FastAPI:
         )
 
     @application.get("/health", tags=["Sistema"])
-    async def health_check():
+    async def health_check() -> dict:
         return {"status": "ok"}
 
     application.include_router(api_router, prefix=settings.API_V1_STR)

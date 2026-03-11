@@ -1,14 +1,16 @@
+from datetime import date
+from decimal import Decimal
+
+from pydantic import BaseModel, Field
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
-from decimal import Decimal
-from datetime import date
-from pydantic import BaseModel, Field
 
-from app.models.transaccion import Transaccion
 from app.models.categoria import Categoria, TipoCategoria
-from app.services.onboarding_service import OnboardingService
+from app.models.transaccion import Transaccion
 from app.schemas.moneda_utils import unidad_menor_a_decimal
+from app.services.onboarding_service import OnboardingService
+
 
 class DashboardResponse(BaseModel):
     fondo_intocable: Decimal = Field(default=Decimal("0.00"), description="Ahorro total (en la moneda base).")

@@ -1,8 +1,11 @@
 from datetime import date
+
+from sqlalchemy import Date, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Text, Date, ForeignKey, Index
-from app.models.base import Base
+
 import app.models.categoria
+from app.models.base import Base
+
 
 class Transaccion(Base):
     monto_unidad_menor: Mapped[int] = mapped_column(Integer, nullable=False)

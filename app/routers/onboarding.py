@@ -17,7 +17,7 @@ router = APIRouter()
 async def crear_onboarding(
     payload: OnboardingBasico,
     db: AsyncSession = Depends(get_db_session)
-):
+) -> OnboardingBasico:
     return await OnboardingService.registrar_punto_cero(db, payload)
 
 @router.get(
@@ -27,7 +27,7 @@ async def crear_onboarding(
 )
 async def ver_onboarding(
     db: AsyncSession = Depends(get_db_session)
-):
+) -> dict | OnboardingBasico:
     perfil = await OnboardingService.obtener_perfil_activo(db)
     if not perfil:
         return {} # El frontend debe mostrar la pantalla de registro si viene vacío

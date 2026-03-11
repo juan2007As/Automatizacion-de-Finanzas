@@ -1,6 +1,8 @@
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from app.models.base import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -36,7 +38,7 @@ class BaseRepository(Generic[ModelType]):
     async def remove(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
         obj = await self.get(db=db, id=id)
         if obj:
-            obj.is_active = False
+            setattr(obj, "is_active", False)
             db.add(obj)
             await db.flush()
         return obj

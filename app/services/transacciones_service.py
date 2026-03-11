@@ -1,12 +1,14 @@
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
-from app.schemas.transaccion import TransaccionCreate, TransaccionResponse
-from app.schemas.moneda_utils import decimal_a_unidad_menor, unidad_menor_a_decimal
-from app.repositories.transaccion_repo import transaccion_repo
-from app.repositories.categoria_repo import categoria_repo
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.logger import logger
+from app.repositories.categoria_repo import categoria_repo
+from app.repositories.transaccion_repo import transaccion_repo
+from app.schemas.moneda_utils import decimal_a_unidad_menor, unidad_menor_a_decimal
+from app.schemas.transaccion import TransaccionCreate, TransaccionResponse
+
 
 class TransaccionService:
     @staticmethod
@@ -47,7 +49,7 @@ class TransaccionService:
         except Exception as e:
             await db.rollback()
             logger.error(f"Error guardando transacción ACID: {str(e)}", exc_info=True)
-            raise HTTPException(status_code=500, detail="Fallo al registrar la transacción.")
+            raise HTTPException(status_code=500, detail="Fallo al registrar la transacción.") from e
 
     @staticmethod
     async def listar_historial(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[TransaccionResponse]:
