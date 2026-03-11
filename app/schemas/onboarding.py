@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Any
 
 class OnboardingBasico(BaseModel):
     moneda_principal: str = Field(..., min_length=3, max_length=3)
@@ -15,7 +15,7 @@ class OnboardingBasico(BaseModel):
 
     @field_validator('ingreso_mensual_promedio', 'saldo_actual', mode='before')
     @classmethod
-    def truncar_decimales(cls, v: any) -> Decimal:
+    def truncar_decimales(cls, v: Any) -> Decimal:
         try:
             val = Decimal(str(v))
             return val.quantize(Decimal('0.00'))

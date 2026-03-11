@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Any
 from pydantic import BaseModel, Field, field_validator
 
 class TransaccionBase(BaseModel):
@@ -12,7 +12,7 @@ class TransaccionBase(BaseModel):
 
     @field_validator('monto', mode='before')
     @classmethod
-    def truncar_decimales(cls, v: any) -> Decimal:
+    def truncar_decimales(cls, v: Any) -> Decimal:
         try:
             val = Decimal(str(v))
             return val.quantize(Decimal('0.00'))

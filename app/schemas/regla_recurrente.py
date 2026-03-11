@@ -1,6 +1,6 @@
 from decimal import Decimal
 from datetime import date
-from typing import Optional
+from typing import Optional, Any
 from pydantic import BaseModel, Field, field_validator
 from app.models.regla_recurrente import Frecuencia
 
@@ -14,7 +14,7 @@ class ReglaRecurrenteBase(BaseModel):
 
     @field_validator('monto', mode='before')
     @classmethod
-    def truncar_decimales(cls, v: any) -> Decimal:
+    def truncar_decimales(cls, v: Any) -> Decimal:
         try:
             val = Decimal(str(v))
             return val.quantize(Decimal('0.00'))

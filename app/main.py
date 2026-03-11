@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
 from app.core.config import settings
 from app.core.logger import logger
 from app.routers import api_router
@@ -18,7 +19,7 @@ def create_application() -> FastAPI:
             status_code=422,
             content={
                 "detail": "Error en el formato de los datos.",
-                "errores_tecnicos": exc.errors(),
+                "errores_tecnicos": jsonable_encoder(exc.errors()),
                 "sugerencia_amigable": "Revisa que los montos sean decimales correctos."
             },
         )
