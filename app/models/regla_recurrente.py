@@ -21,7 +21,6 @@ class ReglaRecurrente(Base):
     fecha_inicio: Mapped[date] = mapped_column(Date, nullable=False)
     fecha_fin: Mapped[date | None] = mapped_column(Date, nullable=True)
     ultima_ejecucion: Mapped[date | None] = mapped_column(Date, nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     categoria_id: Mapped[int] = mapped_column(
         ForeignKey("categorias.id", ondelete="RESTRICT"), nullable=False, index=True
