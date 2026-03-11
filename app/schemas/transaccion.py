@@ -1,23 +1,34 @@
 from datetime import date
 from decimal import Decimal
 from typing import Optional, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+from app.schemas.moneda_utils import DIVISAS_SOPORTADAS
 
 class TransaccionBase(BaseModel):
-    monto: Decimal = Field(..., gt=0)
+    monto: Decimal = Field(..., gt=0, description="Monto en la divisa original")
+    moneda: str = Field(..., min_length=3, max_length=3, description="Código ISO (ej. USD, COP)")
     fecha: date = Field(...)
     descripcion: str = Field(..., min_length=2, max_length=255)
     notas: Optional[str] = Field(None)
     categoria_id: int = Field(..., gt=0)
 
-    @field_validator('monto', mode='before')
+    @field_validator('moneda')
     @classmethod
-    def truncar_decimales(cls, v: Any) -> Decimal:
-        try:
-            val = Decimal(str(v))
-            return val.quantize(Decimal('0.00'))
-        except Exception:
-            raise ValueError("El monto debe ser un número decimal válido.")
+    def validar_moneda(cls, v: str) -> str:
+        v = v.upper()
+        if v not in DIVISAS_SOPORTADAS:
+            raise ValueError(f"Divisa {v} no soportada actualmente.")
+        return v
+
+    @model_validator(mode='after')
+    def validar_decimales_moneda(self) -> 'TransaccionBase':
+        decimales_permitidos = DIVISAS_SOPORTADAS.get(self.moneda, 2)
+        if self.monto.as_tuple().exponent < -decimales_permitidos:
+            raise ValueError(
+                f"El monto {self.monto} tiene demasiados decimales para la moneda {self.moneda}. "
+                f"Máximo permitido: {decimales_permitidos}."
+            )
+        return self
 
 class TransaccionCreate(TransaccionBase):
     pass
@@ -25,6 +36,7 @@ class TransaccionCreate(TransaccionBase):
 class TransaccionResponse(BaseModel):
     id: int
     monto: Decimal
+    moneda: str
     fecha: date
     descripcion: str
     notas: Optional[str] = None

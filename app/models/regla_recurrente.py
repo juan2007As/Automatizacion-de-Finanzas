@@ -1,5 +1,4 @@
 import enum
-from decimal import Decimal
 from datetime import date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Enum, Integer, Date, Boolean, ForeignKey
@@ -24,4 +23,4 @@ class ReglaRecurrente(Base):
     categoria_id: Mapped[int] = mapped_column(
         ForeignKey("categorias.id", ondelete="RESTRICT"), nullable=False, index=True
     )
-    categoria: Mapped["Categoria"] = relationship()
+    categoria: Mapped["Categoria"] = relationship() # noqa: F821

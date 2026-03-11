@@ -1,8 +1,6 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy import text
 from app.core.config import settings
-from app.core.logger import logger
 
 # SQLite asíncrono. No soporta pool sizes como postgres, es local mono-archivo.
 engine = create_async_engine(

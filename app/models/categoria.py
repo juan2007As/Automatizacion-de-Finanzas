@@ -1,6 +1,6 @@
 import enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Enum, Boolean
+from sqlalchemy import String, Enum
 from app.models.base import Base
 
 class TipoCategoria(str, enum.Enum):
@@ -14,8 +14,7 @@ class Categoria(Base):
     nombre: Mapped[str] = mapped_column(String(100), index=True, nullable=False)
     tipo: Mapped[TipoCategoria] = mapped_column(Enum(TipoCategoria), nullable=False)
     color_hex: Mapped[str] = mapped_column(String(7), nullable=True, default="#008080")
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    transacciones: Mapped[list["Transaccion"]] = relationship(
+    transacciones: Mapped[list["Transaccion"]] = relationship( # noqa: F821
         back_populates="categoria", cascade="all, delete-orphan"
     )

@@ -1,4 +1,3 @@
-from typing import Any
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 from datetime import datetime

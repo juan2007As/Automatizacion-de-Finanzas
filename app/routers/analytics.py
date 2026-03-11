@@ -1,16 +1,18 @@
-from typing import Any
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db_session, get_current_active_user
-from app.models.usuario import Usuario
-from app.services.analytics import AnalyticsService, DashboardResponse
+from app.db.session import get_db_session
+from app.services.analytics_service import AnalyticsService, DashboardResponse
 
 router = APIRouter()
 
-@router.get("/dashboard", response_model=DashboardResponse)
-async def get_dashboard_principal(
-    current_user: Usuario = Depends(get_current_active_user),
+@router.get(
+    "/dashboard",
+    response_model=DashboardResponse,
+    summary="Dashboard Financiero Mensual",
+    description="Ejecuta la máquina analítica. Cruza el onboarding base con los gastos/ahorros en la moneda principal y calcula banderas de riesgo (Fuga de capital)."
+)
+async def obtener_dashboard(
     db: AsyncSession = Depends(get_db_session)
 ):
-    return await AnalyticsService.get_dashboard_mensual(db, current_user)
+    return await AnalyticsService.get_dashboard_mensual(db)
