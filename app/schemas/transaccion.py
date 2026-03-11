@@ -22,7 +22,13 @@ class TransaccionBase(BaseModel):
 class TransaccionCreate(TransaccionBase):
     pass
 
-class TransaccionResponse(TransaccionBase):
+class TransaccionResponse(BaseModel):
     id: int
+    monto: Decimal
+    fecha: date
+    descripcion: str
+    notas: Optional[str] = None
+    categoria_id: int
+
     class Config:
         from_attributes = True

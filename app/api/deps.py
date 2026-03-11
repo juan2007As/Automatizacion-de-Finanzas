@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.core.config import settings
-from app.db.session import get_db_session, get_tenant_db_session
+from app.db.session import get_db_session
 from app.models.usuario import Usuario
 from app.schemas.usuario import TokenPayload
 from app.core.logger import logger
@@ -39,6 +39,4 @@ async def get_current_user(
 async def get_current_active_user(current_user: Usuario = Depends(get_current_user)) -> Usuario:
     return current_user
 
-async def get_current_tenant_db(current_user: Usuario = Depends(get_current_active_user)) -> AsyncGenerator[AsyncSession, None]:
-    async for db in get_tenant_db_session(current_user.tenant_schema):
-        yield db
+# get_current_tenant_db Eliminado, se usará `get_db_session` directamente + `current_user`

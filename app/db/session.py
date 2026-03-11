@@ -4,12 +4,11 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.logger import logger
 
+# SQLite asíncrono. No soporta pool sizes como postgres, es local mono-archivo.
 engine = create_async_engine(
     settings.async_database_url,
     echo=False,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10
+    # SQLite no usa pool_size ni max_overflow
 )
 
 AsyncSessionLocal = async_sessionmaker(
@@ -23,15 +22,5 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
         finally:
             await session.close()
 
-async def get_tenant_db_session(schema_name: str) -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        try:
-            # Evitamos inyección de SQL validando y escapando comillas en identificadores.
-            safe_schema = schema_name.replace('"', '""')
-            await session.execute(text(f'SET search_path TO "{safe_schema}"'))
-            yield session
-        except Exception as e:
-            logger.error(f"Error configurando el tenant schema {schema_name}: {str(e)}")
-            raise
-        finally:
-            await session.close()
+# get_tenant_db_session ELIMINADA. Ya no usamos Multi-Tenancy (Schemas de Postgres).
+# La base de datos entera le pertenece a la persona que instala la app offline.

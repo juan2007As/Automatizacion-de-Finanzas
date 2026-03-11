@@ -28,16 +28,20 @@ class AnalyticsService:
         result_onboarding = await db.execute(stmt_onboarding)
         perfil = result_onboarding.scalar_one_or_none()
 
-        ingreso_promedio = perfil.ingreso_mensual_promedio if perfil else Decimal("0.01")
+        if perfil:
+            ingreso_promedio = Decimal(perfil.ingreso_mensual_promedio_centavos) / Decimal("100")
+        else:
+            ingreso_promedio = Decimal("0.01")
 
-        stmt_ahorro = select(func.sum(Transaccion.monto)).join(Categoria).where(
+        stmt_ahorro = select(func.sum(Transaccion.monto_centavos)).join(Categoria).where(
             Categoria.tipo == TipoCategoria.AHORRO_INVERSION
         )
         result_ahorro = await db.execute(stmt_ahorro)
-        fondo_total = result_ahorro.scalar() or Decimal("0.00")
+        fondo_total_centavos = result_ahorro.scalar() or 0
+        fondo_total = Decimal(fondo_total_centavos) / Decimal("100")
 
         stmt_gastos = (
-            select(Categoria.tipo, func.sum(Transaccion.monto))
+            select(Categoria.tipo, func.sum(Transaccion.monto_centavos))
             .join(Transaccion)
             .where(Transaccion.fecha >= primer_dia_mes)
             .where(Categoria.tipo.in_([TipoCategoria.GASTO_HORMIGA, TipoCategoria.GASTO_EVENTUAL]))
@@ -45,9 +49,9 @@ class AnalyticsService:
         )
         result_gastos = await db.execute(stmt_gastos)
 
-        gastos_mes = {row[0]: row[1] or Decimal("0.00") for row in result_gastos.all()}
-        hormiga = gastos_mes.get(TipoCategoria.GASTO_HORMIGA, Decimal("0.00"))
-        eventual = gastos_mes.get(TipoCategoria.GASTO_EVENTUAL, Decimal("0.00"))
+        gastos_mes_centavos = {row[0]: row[1] or 0 for row in result_gastos.all()}
+        hormiga = Decimal(gastos_mes_centavos.get(TipoCategoria.GASTO_HORMIGA, 0)) / Decimal("100")
+        eventual = Decimal(gastos_mes_centavos.get(TipoCategoria.GASTO_EVENTUAL, 0)) / Decimal("100")
 
         total_deseos = hormiga + eventual
         porcentaje_deseos = (total_deseos / ingreso_promedio) * Decimal("100")

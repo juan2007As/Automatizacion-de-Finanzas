@@ -1,11 +1,14 @@
 from decimal import Decimal
 from datetime import date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Numeric, String, Text, Date, ForeignKey, Index
+from sqlalchemy import Integer, String, Text, Date, ForeignKey, Index
 from app.models.base import Base
 
 class Transaccion(Base):
-    monto: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    # En SQLite, guardar Decimal/Numeric puede causar pérdida de precisión.
+    # El dinero se guardará como Integer (centavos). Ej. 15.50 -> 1550.
+    # La API lo convertirá a Decimal al responder.
+    monto_centavos: Mapped[int] = mapped_column(Integer, nullable=False)
     fecha: Mapped[date] = mapped_column(Date, index=True, nullable=False)
     descripcion: Mapped[str] = mapped_column(String(255), nullable=False)
     notas: Mapped[str | None] = mapped_column(Text, nullable=True)
